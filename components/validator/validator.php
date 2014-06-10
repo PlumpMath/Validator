@@ -2,17 +2,12 @@
 
 class Validator
 {
-  public $rules = [];
+  static $rules;
   public $errors = [];
-
-  public function __construct($rules)
-  {
-    $this->rules = $rules;
-  }
 
   public function getRule($name)
   {
-    return $this->rules[$name];
+    return static::$rules[$name];
   }
 
   public function getRulesFromString($ruleList)
@@ -25,7 +20,7 @@ class Validator
     $rules = [];
 
     foreach ($names as $name)
-      $rules[] = $this->rules[$name];
+      $rules[] = static::$rules[$name];
 
     return $rules;
   }
