@@ -3,13 +3,19 @@
 class Validator
 {
   public $rules = [];
+  public $errors = [];
 
   public function __construct($rules)
   {
     $this->rules = $rules;
   }
 
-  public function getRules($ruleList)
+  public function getRule($name)
+  {
+    return $this->rules[$name];
+  }
+
+  public function getRulesFromString($ruleList)
   {
     if (preg_match('/\|/', $ruleList))
       $names = explode('|', $ruleList);
@@ -24,15 +30,19 @@ class Validator
     return $rules;
   }
 
-  public function isValid($datum, $ruleList)
+  public function addError($name, $msg)
+  {
+    $this->errors[$name] = $msg;
+  }
+
+  public function checkInput($input)
   {
     $passes = true;
 
-    $rules = $this->getRules($ruleList);
+    $rules = $this->getRulesFromString($input->getRules());
 
-    foreach ($rules as $rule) {
-      $passes = $passes && $rule->passes($datum);
-    }
+    foreach ($rules as $rule)
+      if ( ! $passes = ($passes && $rule->passes($input->getValue()))) $this->addError($input->getName(), $rule->report($input->getLabel()));
 
     return $passes;
   }
